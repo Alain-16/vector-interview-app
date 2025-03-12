@@ -4,6 +4,8 @@ from .models import Question, Interview
 
 User=get_user_model()
 
+# Here we defined the serializer class for our User model
+# Serializers act as a bridge between django model objects and JSON data when we are using RESTAPI framework
 class UserSignUpSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True,required=True)
     password2=serializers.CharField(write_only=True,required=True)
@@ -27,12 +29,14 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             user.set_password(password)
             user.save()
             return user
-
+    
+# Here we defined the serializer class for our Question model
 class QuestionSerializer(serializers.ModelSerializer):
       class Meta:
             model = Question
             fields = ['id','question_text']
 
+# Here we defined the serializer class for our Interview model
 class InterviewSerializer(serializers.ModelSerializer):
       questions = QuestionSerializer(many=True,write_only = True)
 
