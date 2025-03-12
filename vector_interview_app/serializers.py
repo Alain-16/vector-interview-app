@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from .models import Question, Interview
 
 User=get_user_model()
 
@@ -26,3 +27,21 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             user.set_password(password)
             user.save()
             return user
+
+class QuestionSerializer(serializers.ModelSerializer):
+      class Meta:
+            model = Question
+            fields = ['id','question_text']
+
+class InterviewSerializer(serializers.ModelSerializer):
+      questions = QuestionSerializer(many=True,write_only = True)
+
+      class Meta:
+            model = Interview
+            fields = ['id','title','description','questions']
+
+      def create(self, validated_data):
+            questions_data = validated_data.pop('questions')
+            interview = Interview.objects.create(**validated_data)
+            Question.objects.bulk_create([Question(interview=interview, **q) for q in questions_data])
+            return interview

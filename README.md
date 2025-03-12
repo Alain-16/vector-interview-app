@@ -29,20 +29,16 @@ Vector Interview simplifies the interview scheduling process, improves hiring ef
 
 ## Features
 
-- **Custom User Model:** Extends Django's default user model to include roles (candidate, recruiter, evaluator, HR), phone number, company, and more.
 - **JWT Authentication:** Implements JSON Web Token (JWT) based signup and login.
-- **Dual Interface:** Supports both HTML-based views (for browsers) and JSON responses (for API testing via Postman or curl).
+- **REST API Endpoints:**
+  - Endpoints for signup and login with appropriate redirections and messages.
+  - Endpoints for creating an interview session
 - **Docker Deployment:** (Optional) Containerized deployment using Docker and Docker Compose.
-- **Production-ready Settings:** Environment variables, secure settings, and logging configurations.
-- **REST API Endpoints:** Endpoints for signup and login with appropriate redirections and messages.
 
 ## Architecture
 
 - **Backend:** Django with Django REST Framework.
 - **Authentication:** JWT tokens using [djangorestframework-simplejwt](https://github.com/jazzband/djangorestframework-simplejwt).
-- **Custom User Model:** Located in `vector_interview_app/models.py` as `VectorUser`.
-- **Views:** Dual-rendered API views using DRF’s `TemplateHTMLRenderer` and `JSONRenderer` for both HTML and JSON responses.
-- **Forms and Templates:** HTML forms for signup and login reside in the `templates/` directory.
 
 ## Setup and Installation
 
@@ -55,31 +51,31 @@ Vector Interview simplifies the interview scheduling process, improves hiring ef
 
 ### Local Setup
 
-1. **Clone the Repository:**
+1.  **Clone the Repository:**
 
-   ```bash
-   git clone https://github.com/Alain-16/vector-interview-app.git
-   cd vector-interview-app
-   Setup configuration
-   ```
+    ```bash
+    git clone https://github.com/Alain-16/vector-interview-app.git
+    cd vector-interview-app
+    ```
 
-python3 -m venv my_env
-source my_env/bin/activate
+    a. **Create and activate a virtual environment:**
 
-Install Dependencies:
+          python3 -m venv my_env
+          source my_env/bin/activate
+
+
+B. **Install Dependencies:**
 
     pip install -r requirements.txt
 
-    Ensure your requirements.txt includes:
+    "Ensure your requirements.txt includes:
         Django
         djangorestframework
         djangorestframework-simplejwt
         psycopg2-binary (for PostgreSQL)
-        django-environ (optional, for environment variables)
+        django-environ (optional, for environment variables)"
 
-Configuration
-
-Edit your settings.py to configure:
+C. **Edit your settings.py to configure:**
 
 Database Configuration:
 
@@ -94,40 +90,76 @@ Database Configuration:
     }
     }
 
-Database Migrations
+D. **Database Migrations:**
 
-After configuring your database run:
+    After configuring your database run:
 
-python manage.py makemigrations
-python manage.py migrate
+    python manage.py makemigrations
+    python manage.py migrate
+    python manage.py runserver
 
 If you encounter issues with migration history (especially with custom user models), you may need to clear cached migrations (development only).
 Usage
 HTML Interface
 
+# Testing for JWT Signup and Login base authentication
+
 The app provides HTML views for signup and login:
 
-    Signup Page: Accessible at http://localhost:8000/auth/signup/
-    Login Page: Accessible at http://localhost:8000/auth/login/
+    Signup Page: Accessible at http://localhost:8000/api/vector-interview/signup/
+    Login Page: Accessible at http://localhost:8000/api/vector-interview/login/
 
 These pages use custom templates located in templates/ (e.g., signup.html, login.html).
 
-REST API
+2. **REST API Testing for JWT signup and login based authentication:**
 
 For API testing, you can send JSON requests to the endpoints:
 
 Signup:
 
-    curl -X POST http://localhost:8000/auth/signup/ \
+    curl -X POST http://localhost:8000/api/vector-interview/signup/ \
     -H "Content-Type: application/json" \
     -H "Accept: application/json" \
     -d '{"username": "newuser", "email": "newuser@example.com", "password": "newpass123", "password2": "newpass123", "action": "signup"}'
 
 Login:
 
-    curl -X POST http://localhost:8000/auth/login/ \
+    curl -X POST http://localhost:8000/api/vector-interview/login/ \
          -H "Content-Type: application/json" \
          -H "Accept: application/json" \
          -d '{"username": "newuser", "password": "newpass123", "action": "login"}'
 
+**API RESPONSES:**
+
+    {
+    "detail": "Logged in successfully",
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQxNzM5OTE2LCJpYXQiOjE3NDE3MzkwMTYsImp0aSI6IjMzMWVhYTBkNWY3YzRiMzliMjkwMTNlYmMwYmNmMWFkIiwidXNlcl9pZCI6MX0.m7Xa6NDYBUgrCFna8F0HRyQt5nqlTsnWUSqDdcb9Ia0",
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0MTgyNTQxNiwiaWF0IjoxNzQxNzM5MDE2LCJqdGkiOiJkNjJjMzE4YWY0MTI0ZTVhODM0NzM1NWZhNzI5ZjQ5NSIsInVzZXJfaWQiOjF9.9BlKCnavEdp1rK1ckwNwclGn5gAa2FcOCzC9h4TiR4o"
+    }
+
 JSON requests will return a response with JWT tokens (access and refresh).
+
+# TESTING APIs FOR CREATING INTERVIEW SESSION
+
+The API for creating an interview session allows users to create set an interview with questions, it is designed in a way that each interview record has its corresponding questions associated with it.
+
+1.  **Create interview session:**
+
+        curl -X POST http://127.0.0.1:8000/api/interviews/create/ \
+        -H "Content-Type: application/json" \
+        -d '{
+            "title": "Software Engineer Interview",
+            "description": "First-round technical interview",
+            "questions": [
+                {"question_text": "What is your experience with Django?"},
+                {"question_text": "How do you optimize database queries?"}
+            ]
+        }'
+
+2.  **API Response:**
+
+        {
+            "id":1,
+            "title":"Software Engineer interview",
+            "description":"First-round technical interview"
+        }

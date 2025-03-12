@@ -20,5 +20,5 @@ from django.urls import path,include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('auth/', include('vector_interview_app.urls')),
+    path('api/vector-interview/', include('vector_interview_app.urls')),
 ]

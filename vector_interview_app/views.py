@@ -7,6 +7,8 @@ from django.contrib.auth import login,authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import redirect,render
 from django.contrib import messages
+from .serializers import InterviewSerializer
+from .models import Interview
 
 class UserSignUpView(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
@@ -70,3 +72,7 @@ class UserLoginView(APIView):
 
 def home(request):
     return render(request,'home.html',{})
+
+class InterviewCreateAPIView(generics.CreateAPIView):
+    queryset = Interview.objects.all()
+    serializer_class = InterviewSerializer
