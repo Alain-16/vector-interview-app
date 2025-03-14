@@ -63,7 +63,6 @@ Vector Interview simplifies the interview scheduling process, improves hiring ef
           python3 -m venv my_env
           source my_env/bin/activate
 
-
 B. **Install Dependencies:**
 
     pip install -r requirements.txt
@@ -163,3 +162,15 @@ The API for creating an interview session allows users to create set an intervie
             "title":"Software Engineer interview",
             "description":"First-round technical interview"
         }
+
+# REST API FOR FETCHING ALL INTERVIEWS AND GET INTERVIEW DETAIL BY ID WHILE APPLYING PAGINATION
+
+1.  **REST API for fetching all interviews:**
+
+        curl -X GET http://localhost:8000/api/interviews/interview?page_size=5 \
+        -H "Content-Type: application/json"
+
+2.  **REST API for getting interview details using ID:**
+
+        curl -X GET http://localhost:8000/api/interviews/interview/<int:pk>?page_size=5 \
+        -H "Content-Type: application/json"

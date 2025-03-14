@@ -11,7 +11,7 @@ Features:
 - Secure interview creation using Django REST Framework (DRF)
 """
 
-from rest_framework import generics, status
+from rest_framework import generics, status,viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
@@ -21,6 +21,7 @@ from django.shortcuts import redirect, render
 from django.contrib import messages
 from .serializers import UserSignUpSerializer, InterviewSerializer
 from .models import Interview
+from .pagination import CustomPagination
 
 class UserSignUpView(APIView):
     """
@@ -100,7 +101,7 @@ def home(request):
     """Renders the home page template."""
     return render(request, 'home.html', {})
 
-class InterviewCreateAPIView(generics.CreateAPIView):
+class InterviewController(viewsets.ModelViewSet):
     """
     Handles interview creation.
 
@@ -110,3 +111,4 @@ class InterviewCreateAPIView(generics.CreateAPIView):
     """
     queryset = Interview.objects.all()
     serializer_class = InterviewSerializer
+    pagination_class=CustomPagination
