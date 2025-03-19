@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
-from .views import UserSignUpView, UserLoginView,home,InterviewController
+from .views import UserSignUpView, UserLoginView,home,InterviewController,InterviewVideo
 
 interview_list = InterviewController.as_view({
     'get':'list',
@@ -14,6 +14,10 @@ interview_detail = InterviewController.as_view({
     'delete':'destroy'
 })
 
+interview_video = InterviewVideo.as_view({
+    'post':'create'
+})
+
 urlpatterns = [
     path('signup/', UserSignUpView.as_view(), name='signup'),
     path('login/', UserLoginView.as_view(), name='login'),
@@ -21,4 +25,5 @@ urlpatterns = [
     path('home/',home,name='home'),
     path('interview/',interview_list, name='create-interview'),
     path('interview/<int:pk>/',interview_detail,name='interview-record'),
+    path('upload-video/',interview_video,name='upload-video'),
 ]

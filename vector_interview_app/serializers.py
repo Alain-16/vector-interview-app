@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Question, Interview
+from .models import Question, Interview,interviewVideo
 
 User=get_user_model()
 
@@ -49,3 +49,10 @@ class InterviewSerializer(serializers.ModelSerializer):
             interview = Interview.objects.create(**validated_data)
             Question.objects.bulk_create([Question(interview=interview, **q) for q in questions_data])
             return interview
+
+class InterviewVideoSerializer(serializers.ModelSerializer):
+      
+      class Meta:
+            model = interviewVideo
+            fields =['id','video_title','video_file','video_url','duration','uploaded_at']
+            read_only_fields=['video_url','duration','uploaded_at']

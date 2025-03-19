@@ -174,3 +174,27 @@ The API for creating an interview session allows users to create set an intervie
 
         curl -X GET http://localhost:8000/api/interviews/interview/<int:pk>?page_size=5 \
         -H "Content-Type: application/json"
+
+# REST API FOR UPLOADING VIDEO USING AWS S3
+
+1.  **REST API for uploading the video:**
+
+            curl -X POST http://localhost:8000/api/interviews/upload-video \
+        -H "Content-Type: multipart/form-data" |
+
+    Body-format(key:value):
+
+        video_title:"your-value"
+        video_file:"your-file path"
+
+2.  **API Response:**
+
+        {
+        "id": 13,
+        "video_title": "trial video",
+        "video_file": "/simplescreenrecorder-2024-05-15_01_k03ONyi.06.40.mp4",
+        "video_url": "/simplescreenrecorder-2024-05-15_01_k03ONyi.06.40.mp4",
+        "duration": 15.86,
+        "uploaded_at": "2025-03-19T07:54:35.493969Z"
+
+    }

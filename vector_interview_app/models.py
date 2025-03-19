@@ -20,3 +20,14 @@ class Question(models.Model):
 
     def __str__(self):
         return self.question_text
+    
+
+class interviewVideo(models.Model):
+    video_title = models.CharField()
+    video_file = models.FileField()
+    video_url = models.URLField(blank=True)
+    duration = models.FloatField(null=True,blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.video_title or f"Video {self.id}"
