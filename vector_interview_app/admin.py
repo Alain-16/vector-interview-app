@@ -1,5 +1,5 @@
 from django.contrib import admin
-#from .models import VectorUser
+from .models import interviewVideo
 
 # Register your models here.
-#admin.site.register(VectorUser)
+admin.site.register(interviewVideo)

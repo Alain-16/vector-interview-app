@@ -24,10 +24,21 @@ class Question(models.Model):
 
 class interviewVideo(models.Model):
     video_title = models.CharField()
-    video_file = models.FileField()
+    video_file = models.FileField(upload_to='interview-path/')
     video_url = models.URLField(blank=True)
     duration = models.FloatField(null=True,blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.video_title or f"Video {self.id}"
+
+
+class InterviewEvaluation(models.Model):
+    evaluator = models.CharField(max_length=100)
+    score = models.IntegerField()
+    comments = models.CharField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.evaluator} - {self.score}"
+    

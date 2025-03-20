@@ -1,15 +1,3 @@
-"""
-User Authentication and Interview API Views
-
-This module provides API endpoints for user signup, login, and interview creation.
-It supports both HTML and JSON responses and integrates JWT authentication.
-
-Features:
-- User signup with password validation
-- User login with JWT authentication
-- Render HTML templates for web-based responses
-- Secure interview creation using Django REST Framework (DRF)
-"""
 import os
 import tempfile,subprocess
 from rest_framework import status,viewsets
@@ -20,8 +8,8 @@ from django.contrib.auth import login, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import redirect, render
 from django.contrib import messages
-from .serializers import UserSignUpSerializer, InterviewSerializer,InterviewVideoSerializer
-from .models import Interview,interviewVideo
+from .serializers import UserSignUpSerializer, InterviewSerializer,InterviewVideoSerializer,EvaluationSerializer
+from .models import Interview,interviewVideo,InterviewEvaluation
 from .pagination import CustomPagination
 from moviepy.editor import VideoFileClip
 from django.core.files.storage import default_storage
@@ -29,13 +17,6 @@ from django.core.files.storage import default_storage
 ALLOWED_EXTENSIONS=['.mp4','.mov','.avi','.mkv']
 MAX_FILE_SIZE = 50 * 1024 * 1024
 class UserSignUpView(APIView):
-    """
-    Handles user signup.
-
-    - Supports both HTML and JSON responses.
-    - Saves a new user if validation is successful.
-    - Returns a JWT access and refresh token upon successful signup.
-    """
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = "signup.html"
 
@@ -64,12 +45,6 @@ class UserSignUpView(APIView):
         return Response({'serializer': serializer}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserLoginView(APIView):
-    """
-    Handles user login.
-
-    - Supports both HTML and JSON responses.
-    - Authenticates the user and returns JWT tokens.
-    """
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'login.html'
 
@@ -78,7 +53,6 @@ class UserLoginView(APIView):
         return Response({}, template_name=self.template_name)
 
     def post(self, request, format=None):
-        """Processes user login and returns authentication tokens."""
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(username=username, password=password)
@@ -103,17 +77,10 @@ class UserLoginView(APIView):
                 return Response({"detail": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 def home(request):
-    """Renders the home page template."""
     return render(request, 'home.html', {})
 
 class InterviewController(viewsets.ModelViewSet):
-    """
-    Handles interview creation.
-
-    - Requires authentication.
-    - Uses DRF's CreateAPIView for simplified creation logic.
-    - Only authorized users can create interviews.
-    """
+ 
     queryset = Interview.objects.all()
     serializer_class = InterviewSerializer
     pagination_class=CustomPagination
@@ -173,3 +140,8 @@ class InterviewVideo(viewsets.ModelViewSet):
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class EvaluationController(viewsets.ModelViewSet):
+    queryset = InterviewEvaluation.objects.all()
+    serializer_class = EvaluationSerializer

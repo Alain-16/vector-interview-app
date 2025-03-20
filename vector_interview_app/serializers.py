@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Question, Interview,interviewVideo
+from .models import Question, Interview,interviewVideo,InterviewEvaluation
 
 User=get_user_model()
 
@@ -56,3 +56,10 @@ class InterviewVideoSerializer(serializers.ModelSerializer):
             model = interviewVideo
             fields =['id','video_title','video_file','video_url','duration','uploaded_at']
             read_only_fields=['video_url','duration','uploaded_at']
+
+
+class EvaluationSerializer(serializers.ModelSerializer):
+      class Meta:
+            model = InterviewEvaluation
+            fields = ['id','evaluator','score','comments','created_at']
+            read_only_fields=['id','created_at']

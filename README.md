@@ -101,7 +101,7 @@ If you encounter issues with migration history (especially with custom user mode
 Usage
 HTML Interface
 
-# Testing for JWT Signup and Login base authentication
+# Task#1 Testing for JWT Signup and Login base authentication
 
 The app provides HTML views for signup and login:
 
@@ -138,7 +138,7 @@ Login:
 
 JSON requests will return a response with JWT tokens (access and refresh).
 
-# TESTING APIs FOR CREATING INTERVIEW SESSION
+# Task#2 TESTING APIs FOR CREATING INTERVIEW SESSION
 
 The API for creating an interview session allows users to create set an interview with questions, it is designed in a way that each interview record has its corresponding questions associated with it.
 
@@ -163,7 +163,7 @@ The API for creating an interview session allows users to create set an intervie
             "description":"First-round technical interview"
         }
 
-# REST API FOR FETCHING ALL INTERVIEWS AND GET INTERVIEW DETAIL BY ID WHILE APPLYING PAGINATION
+# Task#3 REST API FOR FETCHING ALL INTERVIEWS AND GET INTERVIEW DETAIL BY ID WHILE APPLYING PAGINATION
 
 1.  **REST API for fetching all interviews:**
 
@@ -175,7 +175,7 @@ The API for creating an interview session allows users to create set an intervie
         curl -X GET http://localhost:8000/api/interviews/interview/<int:pk>?page_size=5 \
         -H "Content-Type: application/json"
 
-# REST API FOR UPLOADING VIDEO USING AWS S3
+# Task#4 REST API FOR UPLOADING VIDEO USING AWS S3
 
 1.  **REST API for uploading the video:**
 
@@ -198,3 +198,67 @@ The API for creating an interview session allows users to create set an intervie
         "uploaded_at": "2025-03-19T07:54:35.493969Z"
 
     }
+
+# Task#5 REST API endpoint for evaluators to submit scores and comments
+
+1.**Send a POST request to this API endpoint**
+
+        curl -X POST http://localhost:8000/api/vector-interview/evaluation/ \
+        -H "Content-Type: application/json" \
+        -d '{"evaluator": "test-user", "score": 85, "comments": "Strong problem solving skills."}'
+
+The API endpoint returns a JSON response with this format
+
+    {
+    "id": 1,
+    "evaluator": "test-user",
+    "score": 60,
+    "comments": "Strong problem solving skills.",
+    "created_at": "2025-03-20T22:08:48.259346Z"
+    }
+
+2.**Code behind this API endpoint implmentation**
+
+Creation of the model class that stores the evaluations in the database
+
+    class InterviewEvaluation(models.Model):
+    evaluator = models.CharField(max_length=100)
+    score = models.IntegerField()
+    comments = models.CharField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.evaluator} - {self.score}"
+
+After creating the model class we have are going to create a serializer class that will be responsible to serialize and deserialize our data sent through the API endpoint and interact with our database model
+
+    class EvaluationSerializer(serializers.ModelSerializer):
+      class Meta:
+            model = InterviewEvaluation
+            fields = ['id','evaluator','score','comments','created_at']
+            read_only_fields=['id','created_at']
+
+We are almost done !!! least but not the least we are going to create a view class this is responsible for interacting with our API request and communicate with our database model and serializer model, take this as a controller of everything we have implemented earlier
+
+    class EvaluationController(viewsets.ModelViewSet):
+    queryset = InterviewEvaluation.objects.all()
+    serializer_class = EvaluationSerializer
+
+Thanks to django_rest_framework for making everything easy we nolonger have to write match code for serialization.
+
+Last one we are going to create the URL routes that sends request to our view class and the rest is for the view class
+
+    evaluation_list = EvaluationController.as_view({
+    'post':'create',
+    'get':'list'
+    })
+    urlpatterns = [
+    path('signup/', UserSignUpView.as_view(), name='signup'),
+    path('login/', UserLoginView.as_view(), name='login'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('home/',home,name='home'),
+    path('interview/',interview_list, name='create-interview'),
+    path('interview/<int:pk>/',interview_detail,name='interview-record'),
+    path('upload-video/',interview_video,name='upload-video'),
+    path('evaluation/',evaluation_list,name='evaluation'), ##Add the evaluation URL route
+    ]
